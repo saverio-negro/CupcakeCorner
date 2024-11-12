@@ -12,8 +12,12 @@ struct ContentView: View {
     @State private var results = [Result]()
     
     var body: some View {
-        VStack {
-            Text("Hello, World")
+        List(results, id: \.self.trackId) { item in
+            VStack(alignment: .leading) {
+                Text(item.trackName)
+                    .font(.headline)
+                Text(item.collectionName)
+            }
         }
     }
 }
