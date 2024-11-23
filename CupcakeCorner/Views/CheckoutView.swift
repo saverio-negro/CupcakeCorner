@@ -10,21 +10,25 @@ import SwiftUI
 struct CheckoutView: View {
     
     var order: Order
-    @State private var confirmatioMessage = ""
+    @State private var confirmationMessage = ""
     @State private var showingConfirmation = false
+    @State private var errorMessage = ""
+    @State private var showingError = false
     
     func placeOrder() async {
+        // Encode data to send
         guard let encoded = try? JSONEncoder().encode(order) else {
             print("Failed to encode order.")
             return
         }
         
+        // Create the URL
         guard let url = URL(string: "https://reqres.in/api/cupcakes") else {
             print("Invalid URL.")
             return
         }
         
-        // Configure the HTTP request
+        // Configure the HTTP request using URLRequest
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
@@ -40,7 +44,7 @@ struct CheckoutView: View {
                 let decodedOrder = try JSONDecoder().decode(Order.self, from: data)
                 
                 // Use order information in confirmation message
-                confirmatioMessage = "Your order for \(decodedOrder.quantity)x \(Order.types[order.type].lowercased()) cupcakes is on its way!"
+                confirmationMessage = "Your order for \(decodedOrder.quantity)x \(Order.types[order.type].lowercased()) cupcakes is on its way!"
                 
             } catch {
                 print("Error while decoding the data: \(error.localizedDescription)")
@@ -51,6 +55,8 @@ struct CheckoutView: View {
             
         } catch {
             print("Checkout failed: \(error.localizedDescription)")
+            errorMessage = "Checkout failed: \(error.localizedDescription)"
+            showingError = true
         }
     }
     
@@ -86,7 +92,12 @@ struct CheckoutView: View {
             .alert("Thank you!", isPresented: $showingConfirmation) {
                 Button("OK") {}
             } message: {
-                Text(confirmatioMessage)
+                Text(confirmationMessage)
+            }
+            .alert("Sorry!", isPresented: $showingError) {
+                Button("OK") {}
+            } message: {
+                Text(errorMessage)
             }
             .scrollBounceBehavior(.basedOnSize)
         }
