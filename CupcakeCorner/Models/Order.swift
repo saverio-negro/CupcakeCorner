@@ -51,9 +51,17 @@ class Order: Codable {
     var city = ""
     var zip = ""
     var isAddressValid: Bool {
+        
+        // Clean the address entries for any whitespaces
+        name = name.trimmingCharacters(in: .whitespaces)
+        streetAddress = streetAddress.trimmingCharacters(in: .whitespaces)
+        city = city.trimmingCharacters(in: .whitespaces)
+        zip = zip.trimmingCharacters(in: .whitespaces)
+        
         if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty {
             return false
         }
+        
         return true
     }
     
